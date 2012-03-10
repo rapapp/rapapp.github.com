@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>CodeMirror Demo</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="js/dev/codemirror.js"></script>
+	<script src="js/dev/mode/javascript/javascript.js"></script>
+	<link rel="stylesheet" href="css/codemirror.css">
+	<script src="demo.js"></script>
+</head>
+<body> 
+<textarea id="itemid">
+	{
+	    onRender: function(target, index) {
+			this.parent = target;
+			this.index = index;
+			var script = "resource3/orion/orion-editor.js";
+			var $this = this;
+			this.jsloaded = false;
+			t$.injectScript(script, {onSuccess: function(){
+				console.log('script loaded...');
+				$this.jsloaded = true;
+				$this.setup();
+			}});
+	    },
+	    setup: function() {
+			console.log('setup...');
+			if (this.jsloaded && !this.editor) {
+				var w = t$.w();
+				eclipse = w.eclipse;
+				var parentNode = $('#' + this.id)[0];
+				var options = {
+				         parent: parentNode, 
+				         readonly: false,
+				         stylesheet: "resource3/orion/editor.css"
+				      };
+				this.editor = new eclipse.Editor(options);
+				$("#" + this.id).css("background-color", "#fff");
+
+				var lines = new eclipse.LineNumberRuler("left", {styleClass: "ruler_lines"}, {styleClass: "ruler_lines_odd"}, {styleClass: "ruler_lines_even"});
+
+				var styler = null;
+				if (styler) {
+					styler.destroy();
+					styler = null;
+				}
+
+				styler = new eclipse.TextStyler(this.editor, "java");	
+				this.editor.addRuler(lines);
+				$this = this;
+
+				this.editor.addEventListener("Focus", function(evt) {
+					console.log('Focus');
+					$this.dofocus();
+				});			
+				this.editor.addEventListener("Blur", function(evt) {
+					console.log('Blur');
+					$this.doblur();
+				});
+
+				if (this.readonly) {
+					this.editor.setReadOnly(this.readonly);
+				}
+				if (!this.value) {
+					this.value = "";
+				}
+				this.editor.setText(this.value);
+			}
+		},
+		onLoad: function() {
+			this.setup();
+		},
+		onUnload: function() {
+			this.editor = null;
+		},
+	    onResize: function(width, height) {
+		    // resize is automcatically taken care by the editor
+	    },
+		setValue: function(value) {
+			console.log('setValue');		
+			this.value = this.getValue();
+			if (this.value != value) {
+				if (this.editor) {
+					this.editor.setText(value);
+				}
+				this.value = value;
+			}
+		},
+		getValue: function () {
+			console.log('getValue');		
+			if (this.editor) return this.editor.getText();
+			else return this.value;
+		},
+		setReadOnly: function(ro) {
+			console.log('setReadOnly: ' + ro);			
+			if (this.readonly && this.readonly != ro && this.editor) {
+				this.editor.setOptions({readonly: ro});
+			}
+			this.readonly = ro;
+		}
+	}
+</textarea>
+</body>
+</html>
