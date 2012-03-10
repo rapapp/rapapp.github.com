@@ -33,7 +33,7 @@
 			}
 			this.editor = CodeMirror($('#' + this.id)[0], {
 			  value: this.value,
-			  mode: "text/html", //"text/css", //"text/x-java",
+			  mode: "text/x-properties", //"text/html", //"text/css", //"text/x-java",
 			  tabSize: 2,
 			  lineNumbers: true,
 			  matchBrackets: true,
