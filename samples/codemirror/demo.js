@@ -4,3 +4,4 @@ var editor = CodeMirror.fromTextArea(document.getElementById("itemid"), {
       matchBrackets: true
 });
 });
+
