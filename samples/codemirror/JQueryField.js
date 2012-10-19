@@ -9,6 +9,12 @@
 			
 		} else {
 			window._codemirror_css_loaded = true;
+			$('head').append(
+				'<style>' +
+				'.activeline {background: #e8f2ff !important;}' +
+				'.CodeMirror-gutter {min-width: 2.6em; cursor: pointer;}' +
+				'</style>'
+			);		
 			if (document.createStyleSheet){
 		    	document.createStyleSheet('http://rapapp.github.com/samples/codemirror/css/codemirror.css');
 			} else {
@@ -31,10 +37,13 @@
 			if (!this.readonly) {
 				this.readonly = false;
 			}
+		  var foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
 			this.editor = CodeMirror($('#' + this.id)[0], {
 			  value: this.value,
-			  mode: "text/x-properties", //"text/html", //"text/css", //"text/x-java",
+			  mode: "text/javascript", //"text/x-properties", //"text/html", //"text/css", //"text/x-java",
 			  tabSize: 2,
+			  lineWrapping: true,
+			  gutter: true,
 			  lineNumbers: true,
 			  matchBrackets: true,
 			  readOnly: this.readonly,
@@ -43,8 +52,15 @@
 			  },
 			  onBlur: function(){
 				$this.doblur();
-			  }
+			  },
+			  onCursorActivity: function() {
+			    $this.editor.setLineClass(hlLine, null, null);
+			    hlLine = $this.editor.setLineClass($this.editor.getCursor().line, null, "activeline");
+			  },
+			  onGutterClick: foldFunc
 			});
+			
+			var hlLine = $this.editor.setLineClass(0, "activeline");
 			var $id = $('#' + this.id);
 			$id.css('background-color', '#fff').css('border', '1px solid #D0D0D0');
 			$id.find('div.CodeMirror-scroll').width($id.width()).height($id.height());
